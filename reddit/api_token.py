@@ -11,21 +11,22 @@ def get_token(config):
 
     return response.json()
 
-def get_top_entires(subreddit, config, token):
+def get_top_entires(config, token):
     headers = {"Authorization": f"bearer {token['access_token']}", "User-Agent": f"{config['app_name']} by {config['username']}"}
     response = requests.get("https://oauth.reddit.com/r/listentothis/top?t=week", headers=headers)
     return response.json()
 
 def get_config():
-    with open("./config.yaml", "r") as f:
+    with open("configs/reddit.yaml", "r") as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     return config
 
 def get_song_list():
     config = get_config()
     token = get_token(config)
-    entries = get_top_entires("asdf", config, token)
+    entries = get_top_entires(config, token)
     song_list = [i["data"]["title"] for i in entries["data"]["children"]]
+    print(len(song_list))
     cleaned_list = []
     for song in song_list:
         song = song.replace("--", "-")
@@ -53,7 +54,7 @@ def get_song_list():
                 "title": title
             })
 
-    print(cleaned_list)
+    return cleaned_list
 
 if __name__ == "__main__":
     get_song_list()
