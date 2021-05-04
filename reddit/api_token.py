@@ -12,8 +12,9 @@ def get_token(config):
     return response.json()
 
 def get_top_entires(config, token):
+    subreddit = config["subreddit"]
     headers = {"Authorization": f"bearer {token['access_token']}", "User-Agent": f"{config['app_name']} by {config['username']}"}
-    response = requests.get("https://oauth.reddit.com/r/listentothis/top?t=week", headers=headers)
+    response = requests.get(f"https://oauth.reddit.com/r/{subreddit}/top?t=week", headers=headers)
     return response.json()
 
 def get_config():
@@ -26,7 +27,6 @@ def get_song_list():
     token = get_token(config)
     entries = get_top_entires(config, token)
     song_list = [i["data"]["title"] for i in entries["data"]["children"]]
-    print(len(song_list))
     cleaned_list = []
     for song in song_list:
         song = song.replace("--", "-")
