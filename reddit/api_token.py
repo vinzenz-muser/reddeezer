@@ -13,8 +13,14 @@ def get_token(config):
 
 def get_top_entires(config, token):
     subreddit = config["subreddit"]
+    
+    limit = 10
+
+    if "n_entries" in config:
+        limit=config["n_entries"]
+    
     headers = {"Authorization": f"bearer {token['access_token']}", "User-Agent": f"{config['app_name']} by {config['username']}"}
-    response = requests.get(f"https://oauth.reddit.com/r/{subreddit}/top?t=week", headers=headers)
+    response = requests.get(f"https://oauth.reddit.com/r/{subreddit}/top?limit={str(limit)}&t=week", headers=headers)
     return response.json()
 
 def get_config():
