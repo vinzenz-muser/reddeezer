@@ -9,3 +9,4 @@ existing_songs = deezer.get_playlist_song_ids(deezer_config["playlist_id"])
 songs_to_add = set(new_songs) - set(existing_songs)
 
 deezer.add_songs_to_playlist(songs_to_add, deezer_config)
+deezer.cap_playlist(100, deezer_config)

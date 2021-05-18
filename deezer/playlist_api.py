@@ -22,7 +22,7 @@ def get_playlist_song_ids(playlist_id):
     
     for i in ans["tracks"]["data"]:
         ans_ids.append(i["id"])
-    
+
     return ans_ids
     
 def get_song_ids(song_list):
@@ -36,7 +36,7 @@ def get_song_ids(song_list):
         if len( ans["data"]) > 0:
             first_res = ans["data"][0]
             song_ids.append(first_res["id"])
-    
+
     return song_ids
 
 def add_songs_to_playlist(song_ids, config):
@@ -44,7 +44,25 @@ def add_songs_to_playlist(song_ids, config):
     token = config["access_token"]
     base_str = f'https://api.deezer.com/playlist/{playlist_id}/tracks?songs='+",".join([str(i) for i in song_ids])
     req_string = base_str+f"&access_token={token}"
-    ans = requests.post(req_string)
+    requests.post(req_string)
+
+def cap_playlist(n_songs, config):
+    token = config["access_token"]
+    playlist_id = config["playlist_id"]
+    response = requests.get(f"https://api.deezer.com/playlist/{playlist_id}")
+
+    ans = response.json()
+    playlist_length = len(ans["tracks"]["data"])
+    ordered_songs = sorted(ans["tracks"]["data"], key=lambda k: k['time_add'])
+    song_ids = []
+
+    if n_songs < playlist_length:
+        for i in range(playlist_length - n_songs):
+            song_ids.append(ordered_songs[i]["id"])
+
+        base_str = f'https://api.deezer.com/playlist/{playlist_id}/tracks?songs='+",".join([str(i) for i in song_ids])
+        req_string = base_str+f"&access_token={token}"
+        requests.delete(req_string)
 
 if __name__ == "__main__":
     config = get_config()
